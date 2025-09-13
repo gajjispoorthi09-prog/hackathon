@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Wellness Monitor - Mood Check-In</title>
+    <link rel="stylesheet" href="hackathon.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 50px;
+        }
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 500px;
+            margin: auto;
+            box-shadow: 0 2px 5px  
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        label,
+        select,
+        textarea {
+            display: block;
+            width: 100%;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .entry {
+            background-color: #e8f5e9;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Mood Check-In</h2>
+        <form id="moodForm">
+            <label for="mood">How do you feel today?</label>
+            <select id="mood" name="mood" required>
+                <option value="">Select Mood</option>
+                <option value="Happy 😊">Happy 😊</option>
+                <option value="Sad 😢">Sad 😢</option>
+                <option value="Stressed 😓">Stressed 😓</option>
+                <option value="Neutral 😐">Neutral 😐</option>
+            </select>
+
+            <label for="comments">Additional Comments (Optional):</label>
+            <textarea id="comments" name="comments" rows="4" placeholder="Write something..."></textarea>
+
+            <button type="submit">Submit Check-In</button>
+        </form>
+
+        <h3>Previous Check-Ins:</h3>
+        <div id="entries"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('moodForm');
+        const entriesDiv = document.getElementById('entries');
+
+        function loadEntries() {
+            const entries = JSON.parse(localStorage.getItem('moodEntries')) || [];
+            entriesDiv.innerHTML = '';
+
+            entries.forEach((entry, index) => {
+                const entryDiv = document.createElement('div');
+                entryDiv.classList.add('entry');
+                entryDiv.innerHTML = `<strong>Mood:</strong> ${entry.mood}<br>
+                                      <strong>Comments:</strong> ${entry.comments}<br>
+                                      <em>${entry.timestamp}</em>`;
+                entriesDiv.appendChild(entryDiv);
+            });
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const mood = document.getElementById('mood').value;
+            const comments = document.getElementById('comments').value;
+
+            const entry = {
+                mood: mood,
+                comments: comments || 'No comments',
+                timestamp: new Date().toLocaleString()
+            };
+
+            const existingEntries = JSON.parse(localStorage.getItem('moodEntries')) || [];
+            existingEntries.push(entry);
+
+            localStorage.setItem('moodEntries', JSON.stringify(existingEntries));
+
+            form.reset();
+            loadEntries();
+        });
+
+        // Load entries when the page loads
+        window.onload = loadEntries;
+    </script>
+</body>
+
+</html>
